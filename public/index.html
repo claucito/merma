@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merma — Colección</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+    input, select, textarea { font: inherit; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+
+    /* Header */
+    .header { background: #fff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 40; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 0; gap: 1rem; flex-wrap: wrap; }
+    .logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 700; color: #8b5cf6; cursor: pointer; }
+    .logo span { font-size: 1.875rem; }
+    .nav { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .nav-btn { padding: 0.4rem 0.875rem; border-radius: 0.5rem; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; }
+    .nav-btn:hover { background: #f1f5f9; }
+    .nav-btn.active { background: #ede9fe; color: #7c3aed; }
+    .btn-primary { background: #8b5cf6; color: #fff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; transition: background 0.2s; }
+    .btn-primary:hover { background: #7c3aed; }
+    .btn-accent { background: #f59e0b; color: #fff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; }
+    .btn-accent:hover { background: #d97706; }
+    .btn-outline { border: 1px solid #cbd5e1; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s; }
+    .btn-outline:hover { border-color: #8b5cf6; color: #8b5cf6; }
+    .btn-danger { background: #ef4444; color: #fff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 0.3rem 0.75rem; font-size: 0.8rem; }
+
+    /* Cards */
+    .card { background: #fff; border-radius: 0.75rem; border: 1px solid #e2e8f0; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+
+    /* Catalog card */
+    .catalog-card { cursor: pointer; }
+    .catalog-card-body { padding: 1.25rem; }
+    .catalog-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+    .catalog-meta { font-size: 0.8rem; color: #64748b; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .catalog-owner { display: flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.8rem; color: #64748b; }
+
+    /* Item grid */
+    .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    .item-circle { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid #e2e8f0; transition: all 0.2s; }
+    .item-circle:hover { border-color: #8b5cf6; transform: scale(1.05); box-shadow: 0 4px 20px rgba(139,92,246,0.2); }
+    .item-name { font-size: 0.8rem; font-weight: 500; text-align: center; margin-top: 0.5rem; color: #334155; }
+
+    /* Form */
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-weight: 500; font-size: 0.875rem; margin-bottom: 0.3rem; color: #475569; }
+    .form-input { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: #fff; transition: border 0.2s; }
+    .form-input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+    textarea.form-input { resize: vertical; min-height: 80px; }
+    select.form-input { cursor: pointer; }
+
+    /* Auth */
+    .auth-page { min-height: calc(100vh - 65px); display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+    .auth-card { background: #fff; border-radius: 1rem; padding: 2rem; width: 100%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .auth-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center; }
+    .auth-subtitle { color: #64748b; text-align: center; margin-bottom: 1.5rem; font-size: 0.9rem; }
+    .auth-form .btn-primary { width: 100%; padding: 0.75rem; font-size: 1rem; }
+    .auth-footer { text-align: center; margin-top: 1rem; font-size: 0.875rem; color: #64748b; }
+    .auth-footer a { color: #8b5cf6; font-weight: 500; }
+
+    /* Main */
+    .main { padding: 1.5rem 0; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap; }
+    .page-title { font-size: 1.5rem; font-weight: 700; }
+    .page-subtitle { color: #64748b; font-size: 0.875rem; margin-top: 0.25rem; }
+    .page-subtitle a { color: #8b5cf6; }
+
+    /* Search */
+    .search-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 180px; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; }
+    .filter-select { padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: #fff; min-width: 130px; }
+
+    /* Detail */
+    .detail-header { background: #fff; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
+    .detail-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .detail-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 0.875rem; color: #64748b; }
+    .detail-body { color: #475569; line-height: 1.6; }
+
+    /* Photo fullscreen */
+    .photo-fullscreen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+    .photo-fullscreen img { max-width: 90vw; max-height: 70vh; border-radius: 1rem; object-fit: contain; }
+    .photo-fullscreen-info { text-align: center; color: #fff; margin-top: 1rem; }
+    .photo-fullscreen-info h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .photo-fullscreen-info p { color: #cbd5e1; font-size: 0.9rem; }
+
+    /* Comments */
+    .comment { background: #fff; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.5rem; border: 1px solid #f1f5f9; }
+    .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+    .comment-author { font-weight: 600; font-size: 0.875rem; }
+    .comment-time { font-size: 0.75rem; color: #94a3b8; }
+    .comment-content { font-size: 0.875rem; color: #475569; }
+
+    /* Profile */
+    .profile-header { background: #fff; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .profile-avatar { width: 4rem; height: 4rem; border-radius: 50%; background: #8b5cf6; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; flex-shrink: 0; }
+    .profile-name { font-weight: 700; font-size: 1.25rem; }
+    .profile-bio { color: #64748b; font-size: 0.875rem; margin-top: 0.25rem; }
+    .profile-stats { display: flex; gap: 1.5rem; margin-top: 0.75rem; }
+    .profile-stat { text-align: center; }
+    .profile-stat-num { font-weight: 700; font-size: 1.25rem; color: #8b5cf6; }
+    .profile-stat-label { font-size: 0.75rem; color: #64748b; }
+
+    /* Badge */
+    .badge { padding: 0.2rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+    .badge-cat { background: #ede9fe; color: #7c3aed; }
+    .badge-country { background: #dcfce7; color: #166534; }
+
+    /* Upload card */
+    .upload-page { max-width: 560px; margin: 0 auto; }
+    .upload-card { background: #fff; border-radius: 1rem; padding: 1.5rem; border: 1px solid #e2e8f0; }
+    .file-drop { border: 2px dashed #cbd5e1; border-radius: 0.75rem; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 1rem; }
+    .file-drop:hover { border-color: #8b5cf6; background: #faf5ff; }
+    .file-drop input { display: none; }
+    .file-drop-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .file-drop-text { color: #64748b; font-size: 0.9rem; }
+    .file-drop-text strong { color: #8b5cf6; }
+    .photo-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 0.5rem; margin-bottom: 1rem; }
+
+    /* Toast */
+    .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 100; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast { padding: 0.75rem 1rem; border-radius: 0.5rem; color: #fff; font-size: 0.875rem; font-weight: 500; animation: slideIn 0.3s; }
+    .toast-success { background: #10b981; }
+    .toast-error { background: #ef4444; }
+    .toast-info { background: #3b82f6; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* Empty */
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #64748b; }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
+
+    /* Grid */
+    .grid { display: grid; gap: 1rem; }
+    .grid-3 { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+    /* Owner bar */
+    .owner-bar { background: #fff; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 1rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0.75rem; }
+    .owner-avatar { width: 2rem; height: 2rem; border-radius: 50%; background: #8b5cf6; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .header-inner { flex-direction: column; }
+      .nav { width: 100%; justify-content: center; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .item-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.75rem; }
+      .item-circle { width: 90px; height: 90px; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast-container" class="toast-container"></div>
+
+<header class="header">
+  <div class="container header-inner">
+    <div class="logo" onclick="navigate('home')">
+      <span>🏺</span>
+      <span>Merma</span>
+    </div>
+    <nav class="nav" id="nav"></nav>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<script>
+const API = '/merma/api';
+
+function toast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function navigate(page, params = {}) {
+  currentPage = page;
+  const query = new URLSearchParams(params).toString();
+  window.location.hash = query ? `#${page}?${query}` : `#${page}`;
+}
+
+async function api(path, options = {}) {
+  const token = localStorage.getItem('merma_token');
+  const headers = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(API + path, { ...options, headers: { ...headers, ...(options.headers || {}) } });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error');
+  return data;
+}
+
+function getUser() {
+  const token = localStorage.getItem('merma_token');
+  if (!token) return null;
+  try { return JSON.parse(atob(token.split('.')[1])); } catch { return null; }
+}
+
+function getInitials(name) {
+  return (name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function formatDate(str) {
+  return new Date(str + 'T12:00:00').toLocaleDateString('es-UY', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatRelative(str) {
+  const d = new Date(str);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return 'hace un momento';
+  if (diff < 3600) return `hace ${Math.floor(diff/60)}m`;
+  if (diff < 86400) return `hace ${Math.floor(diff/3600)}h`;
+  return formatDate(str);
+}
+
+let currentPage = 'home';
+
+function updateNav() {
+  const nav = document.getElementById('nav');
+  const user = getUser();
+  if (user) {
+    nav.innerHTML = `
+      <button class="nav-btn ${currentPage === 'home' ? 'active' : ''}" onclick="navigate('home')">Explorar</button>
+      <button class="nav-btn ${currentPage === 'profile' || currentPage === 'my-catalogs' ? 'active' : ''}" onclick="navigate('my-catalogs')">Mis Catálogos</button>
+      <button class="btn-accent btn-sm" onclick="navigate('catalog-new')">+ Nuevo</button>
+      <button class="nav-btn" onclick="navigate('profile')">Mi Perfil</button>
+    `;
+  } else {
+    nav.innerHTML = `
+      <button class="nav-btn ${currentPage === 'home' ? 'active' : ''}" onclick="navigate('home')">Explorar</button>
+      <button class="nav-btn" onclick="navigate('login')">Iniciar Sesión</button>
+      <button class="btn-primary btn-sm" onclick="navigate('register')">Registrarse</button>
+    `;
+  }
+}
+
+function getPageFromHash() {
+  const hash = window.location.hash.slice(1) || 'home';
+  const [page, query] = hash.split('?');
+  return { page, query: Object.fromEntries(new URLSearchParams(query || '')) };
+}
+
+// ==================== HOME ====================
+async function renderHome(params = {}) {
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="container main"><p style="color:#64748b;text-align:center;padding:2rem">Cargando...</p></div>`;
+  try {
+    const [catalogs, categories] = await Promise.all([
+      api('/catalogs'),
+      api('/categories')
+    ]);
+    const search = params.search || '';
+    const categoryId = params.category || '';
+    const filtered = catalogs.filter(c => {
+      if (categoryId && c.category_id != categoryId) return false;
+      if (search) {
+        const s = search.toLowerCase();
+        if (!c.name.toLowerCase().includes(s) && !(c.description||'').toLowerCase().includes(s)) return false;
+      }
+      return true;
+    });
+    const catOptions = categories.map(c => `<option value="${c.id}" ${c.id == categoryId ? 'selected' : ''}>${c.emoji} ${c.name}</option>`).join('');
+    app.innerHTML = `
+      <div class="container main">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">🏺 Explorar Colecciones</h1>
+            <p class="page-subtitle">Descubrí catálogos de coleccionistas</p>
+          </div>
+        </div>
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Buscar catálogos..." value="${search}"
+            onkeydown="if(event.key==='Enter')navigate('home',{search:this.value,category:'${categoryId}'})">
+          <select class="filter-select" onchange="navigate('home',{search:'${search}',category:this.value})">
+            <option value="">Todas las categorías</option>${catOptions}
+          </select>
+        </div>
+        ${filtered.length === 0 ? `
+          <div class="empty-state"><div class="empty-state-icon">🔍</div><h3>No hay catálogos${search ? ' para esa búsqueda' : ''}</h3><p>${getUser() ? '¡Sé el primero en crear uno!' : 'Iniciá sesión para crear el primer catálogo.'}</p></div>
+        ` : `
+          <div class="grid grid-3">${filtered.map(c => `
+            <div class="card catalog-card" onclick="navigate('catalog',{id:${c.id}})">
+              <div class="catalog-card-body">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem">
+                  <h3 class="catalog-title">${c.name}</h3>
+                  ${c.category_name ? `<span class="badge badge-cat">${c.category_emoji || ''} ${c.category_name}</span>` : ''}
+                </div>
+                ${c.description ? `<p style="font-size:0.85rem;color:#64748b;margin-bottom:0.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${c.description}</p>` : ''}
+                <div class="catalog-meta">
+                  <span>📦 ${c.item_count} items</span>
+                </div>
+                <div class="catalog-owner">
+                  <div class="owner-avatar">${getInitials(c.owner_name)}</div>
+                  <span>${c.owner_name}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}</div>
+        `}
+      </div>`;
+  } catch (e) {
+    app.innerHTML = `<div class="container main"><div class="empty-state"><h3>Error</h3><p>${e.message}</p></div></div>`;
+  }
+}
+
+// ==================== CATALOG VIEW ====================
+async function renderCatalog(params) {
+  const { id } = params;
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="container main"><p style="color:#64748b;text-align:center;padding:2rem">Cargando...</p></div>`;
+  try {
+    const user = getUser();
+    const [catalog, items, categories] = await Promise.all([
+      api(`/catalogs/${id}`),
+      api(`/catalogs/${id}/items`),
+      api('/categories')
+    ]);
+    const countryMap = {};
+    items.forEach(i => { if (i.country) countryMap[i.country] = (countryMap[i.country] || 0) + 1; });
+    const countries = Object.keys(countryMap).sort();
+    const isOwner = user && user.userId === catalog.user_id;
+    const countryFilter = params.country || '';
+    const searchFilter = params.search || '';
+    const filteredItems = items.filter(i => {
+      if (countryFilter && i.country !== countryFilter) return false;
+      if (searchFilter) {
+        const s = searchFilter.toLowerCase();
+        if (!i.name.toLowerCase().includes(s) && !(i.description||'').toLowerCase().includes(s)) return false;
+      }
+      return true;
+    });
+    const countryOptions = countries.map(co => `<option value="${co}" ${co === countryFilter ? 'selected' : ''}>${co} (${countryMap[co]})</option>`).join('');
+    app.innerHTML = `
+      <div class="container main">
+        <button onclick="history.back()" class="btn-outline btn-sm" style="margin-bottom:1rem;padding:0.3rem 0.75rem">← Volver</button>
+        <div class="owner-bar">
+          <div class="owner-avatar">${getInitials(catalog.owner_name)}</div>
+          <div style="flex:1">
+            <div style="font-weight:600;cursor:pointer" onclick="navigate('user-profile',{id:${catalog.user_id}})">${catalog.owner_name}</div>
+            <div style="font-size:0.8rem;color:#64748b">${catalog.category_name ? `${catalog.category_emoji} ${catalog.category_name}` : ''}</div>
+          </div>
+          ${!isOwner && user ? `<button class="btn-outline btn-sm" onclick="toggleFollow(${catalog.user_id})" id="follow-btn">${catalog.is_following ? 'Siguiendo' : 'Seguir'}</button>` : ''}
+          ${isOwner ? `<button class="btn-primary btn-sm" onclick="navigate('item-new',{catalogId:${id}})">+ Agregar Item</button>` : ''}
+        </div>
+        <div class="detail-header" style="padding:1rem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:${catalog.description ? '0.75rem' : '0'}">
+            <div>
+              <h1 class="detail-title" style="font-size:1.25rem">${catalog.name}</h1>
+              <div class="detail-meta" style="margin-bottom:0">
+                <span>📦 ${catalog.item_count} items</span>
+                <span>📅 ${formatDate(catalog.created_at)}</span>
+              </div>
+            </div>
+          </div>
+          ${catalog.description ? `<p class="detail-body" style="font-size:0.9rem">${catalog.description}</p>` : ''}
+        </div>
+        ${countries.length > 0 ? `
+          <div style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+            <select class="filter-select" style="min-width:120px" onchange="navigate('catalog',{id:${id},country:this.value,search:'${searchFilter}'})">
+              <option value="">Todos los países</option>${countryOptions}
+            </select>
+            ${countryFilter ? `<button class="btn-outline btn-sm" onclick="navigate('catalog',{id:${id}})">✕ Limpiar filtro</button>` : ''}
+          </div>
+        ` : ''}
+        ${filteredItems.length === 0 ? `
+          <div class="empty-state"><div class="empty-state-icon">📦</div><h3>${items.length === 0 ? 'Este catálogo está vacío' : 'No hay items para ese filtro'}</h3>${isOwner ? '<button class="btn-primary" onclick="navigate(\'item-new\',{catalogId:'+id+'})">+ Agregar el primero</button>' : ''}</div>
+        ` : `
+          <div class="item-grid">
+            ${filteredItems.map(item => `
+              <div style="display:flex;flex-direction:column;align-items:center">
+                <img src="/merma/uploads/${item.photo_filename}" alt="${item.name}" class="item-circle" onclick="openPhoto('${item.photo_filename}','${item.name.replace(/'/g,"\\'")}','${(item.description||'').replace(/'/g,"\\'")}','${(item.country||'').replace(/'/g,"\\'")}','${item.id}','${isOwner}')">
+                <div class="item-name">${item.name}</div>
+                ${item.country ? `<span style="font-size:0.7rem;color:#64748b">${item.country}</span>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>`;
+  } catch (e) {
+    app.innerHTML = `<div class="container main"><div class="empty-state"><h3>Error</h3><p>${e.message}</p></div></div>`;
+  }
+}
+
+function openPhoto(filename, name, description, country, itemId, isOwner) {
+  const container = document.createElement('div');
+  container.className = 'photo-fullscreen';
+  container.onclick = (e) => { if (e.target === container) container.remove(); };
+  container.innerHTML = `
+    <img src="/merma/uploads/${filename}" alt="${name}">
+    <div class="photo-fullscreen-info">
+      <h2>${name}</h2>
+      ${country ? `<p>🌍 ${country}</p>` : ''}
+      ${description ? `<p style="margin-top:0.5rem">${description}</p>` : ''}
+      ${isOwner === 'true' ? `<button class="btn-outline btn-sm" style="margin-top:1rem;color:#fff;border-color:#fff" onclick="navigate('item-edit',{id:${itemId}})">✏️ Editar</button>` : ''}
+    </div>
+  `;
+  document.body.appendChild(container);
+}
+
+async function toggleFollow(userId) {
+  try {
+    const r = await api(`/users/${userId}/follow`, { method: 'POST' });
+    document.getElementById('follow-btn').textContent = 'Siguiendo';
+    toast('Seguís a este usuario');
+  } catch (e) {
+    if (e.message.includes('Ya')) {
+      await api(`/users/${userId}/follow`, { method: 'DELETE' });
+      document.getElementById('follow-btn').textContent = 'Seguir';
+      toast('Dejaste de seguir');
+    } else toast(e.message, 'error');
+  }
+}
+
+// ==================== AUTH ====================
+function renderLogin() {
+  if (getUser()) { navigate('home'); return; }
+  document.getElementById('app').innerHTML = `
+    <div class="auth-page">
+      <div class="auth-card">
+        <h1 class="auth-title">👋 ¡Bienvenido!</h1>
+        <p class="auth-subtitle">Ingresá a tu cuenta</p>
+        <form class="auth-form" onsubmit="handleLogin(event)">
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="login-email" class="form-input" placeholder="tu@email.com" required></div>
+          <div class="form-group"><label class="form-label">Contraseña</label><input type="password" id="login-pass" class="form-input" placeholder="••••••••" required></div>
+          <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        </form>
+        <div class="auth-footer">¿No tenés cuenta? <a href="#register" onclick="navigate('register')">Registrate</a></div>
+      </div>
+    </div>`;
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  try {
+    const data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email: document.getElementById('login-email').value.trim(), password: document.getElementById('login-pass').value }) });
+    localStorage.setItem('merma_token', data.token);
+    toast('¡Bienvenido!'); updateNav(); navigate('home');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function renderRegister() {
+  if (getUser()) { navigate('home'); return; }
+  document.getElementById('app').innerHTML = `
+    <div class="auth-page">
+      <div class="auth-card">
+        <h1 class="auth-title">✨ Crear Cuenta</h1>
+        <p class="auth-subtitle">Unite a la comunidad de coleccionistas</p>
+        <form class="auth-form" onsubmit="handleRegister(event)">
+          <div class="form-group"><label class="form-label">Tu nombre</label><input type="text" id="reg-name" class="form-input" placeholder="Juan Pérez" required></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="reg-email" class="form-input" placeholder="tu@email.com" required></div>
+          <div class="form-group"><label class="form-label">Contraseña</label><input type="password" id="reg-pass" class="form-input" placeholder="Mínimo 6 caracteres" required minlength="6"></div>
+          <button type="submit" class="btn-primary">Crear Cuenta</button>
+        </form>
+        <div class="auth-footer">¿Ya tenés cuenta? <a href="#login" onclick="navigate('login')">Iniciá sesión</a></div>
+      </div>
+    </div>`;
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  try {
+    const data = await api('/auth/register', { method: 'POST', body: JSON.stringify({ name: document.getElementById('reg-name').value.trim(), email: document.getElementById('reg-email').value.trim(), password: document.getElementById('reg-pass').value }) });
+    localStorage.setItem('merma_token', data.token);
+    toast('¡Cuenta creada!'); updateNav(); navigate('catalog-new');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function logout() {
+  localStorage.removeItem('merma_token');
+  toast('Sesión cerrada', 'info'); updateNav(); navigate('home');
+}
+
+// ==================== MY CATALOGS ====================
+async function renderMyCatalogs() {
+  const user = getUser();
+  if (!user) { navigate('login'); return; }
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="container main"><p style="color:#64748b;text-align:center;padding:2rem">Cargando...</p></div>`;
+  try {
+    const catalogs = await api(`/catalogs?user=${user.userId}`);
+    app.innerHTML = `
+      <div class="container main">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">📦 Mis Catálogos</h1>
+            <p class="page-subtitle">${catalogs.length} catálogo${catalogs.length !== 1 ? 's' : ''}</p>
+          </div>
+          <button class="btn-primary" onclick="navigate('catalog-new')">+ Nuevo Catálogo</button>
+        </div>
+        ${catalogs.length === 0 ? `
+          <div class="empty-state"><div class="empty-state-icon">📦</div><h3>Todavía no tenés catálogos</h3><button class="btn-primary" onclick="navigate('catalog-new')">Crear el primero</button></div>
+        ` : `
+          <div class="grid grid-3">${catalogs.map(c => `
+            <div class="card catalog-card" onclick="navigate('catalog',{id:${c.id}})">
+              <div class="catalog-card-body">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem">
+                  <h3 class="catalog-title">${c.name}</h3>
+                  ${c.category_name ? `<span class="badge badge-cat">${c.category_emoji || ''} ${c.category_name}</span>` : ''}
+                </div>
+                ${c.description ? `<p style="font-size:0.85rem;color:#64748b;margin-bottom:0.5rem">${c.description}</p>` : ''}
+                <div class="catalog-meta"><span>📦 ${c.item_count} items</span> ${c.is_public ? '' : '<span>🔒 Privado</span>'}</div>
+              </div>
+            </div>
+          `).join('')}</div>
+        `}
+      </div>`;
+  } catch (e) { app.innerHTML = `<div class="container main"><div class="empty-state"><h3>Error</h3><p>${e.message}</p></div></div>`; }
+}
+
+// ==================== NEW CATALOG ====================
+async function renderCatalogNew() {
+  const user = getUser();
+  if (!user) { navigate('login'); return; }
+  const app = document.getElementById('app');
+  const categories = await api('/categories');
+  const catOptions = categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+  app.innerHTML = `
+    <div class="container main">
+      <div class="upload-page">
+        <div class="page-header"><h1 class="page-title">📦 Nuevo Catálogo</h1></div>
+        <div class="upload-card">
+          <form onsubmit="handleCatalogNew(event)">
+            <div class="form-group"><label class="form-label">Nombre del catálogo *</label><input type="text" id="cat-name" class="form-input" placeholder="Ej: Tapitas de Cerveza" required></div>
+            <div class="form-group"><label class="form-label">Descripción</label><textarea id="cat-desc" class="form-input" placeholder="¿Qué coleccionás en este catálogo?"></textarea></div>
+            <div class="form-group">
+              <label class="form-label">Categoría</label>
+              <select id="cat-category" class="form-input">
+                <option value="">Seleccionar categoría...</option>${catOptions}
+              </select>
+            </div>
+            <div class="form-group">
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                <input type="checkbox" id="cat-public" checked>
+                <span style="font-size:0.875rem">🔓 Catálogo público (otros pueden verlo)</span>
+              </label>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;padding:0.75rem">Crear Catálogo</button>
+          </form>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function handleCatalogNew(e) {
+  e.preventDefault();
+  try {
+    const data = await api('/catalogs', { method: 'POST', body: JSON.stringify({
+      name: document.getElementById('cat-name').value.trim(),
+      description: document.getElementById('cat-desc').value.trim(),
+      category_id: document.getElementById('cat-category').value || null,
+      is_public: document.getElementById('cat-public').checked
+    })});
+    toast('¡Catálogo creado!'); navigate('catalog', { id: data.id });
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ==================== NEW ITEM ====================
+async function renderItemNew() {
+  const user = getUser();
+  if (!user) { navigate('login'); return; }
+  const catalogId = getPageFromHash().query.catalogId;
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="container main">
+      <div class="upload-page">
+        <div class="page-header">
+          <h1 class="page-title">📷 Agregar Item</h1>
+        </div>
+        <div class="upload-card">
+          <form onsubmit="handleItemNew(event, ${catalogId})">
+            <div class="form-group">
+              <label class="form-label">Foto *</label>
+              <div class="file-drop" id="photo-drop" onclick="document.getElementById('photo-input').click()">
+                <input type="file" id="photo-input" accept="image/*" onchange="previewPhoto(this)">
+                <div class="file-drop-icon">📷</div>
+                <div class="file-drop-text">Hacé click o arrastrá una foto</div>
+              </div>
+              <img id="photo-preview" style="display:none" class="photo-preview">
+            </div>
+            <div class="form-group"><label class="form-label">Nombre *</label><input type="text" id="item-name" class="form-input" placeholder="Nombre del item" required></div>
+            <div class="form-group"><label class="form-label">País de origen</label><input type="text" id="item-country" class="form-input" placeholder="Ej: Uruguay"></div>
+            <div class="form-group"><label class="form-label">Descripción</label><textarea id="item-desc" class="form-input" placeholder="Detalles, notas..."></textarea></div>
+            <button type="submit" class="btn-primary" style="width:100%;padding:0.75rem">Agregar</button>
+          </form>
+        </div>
+      </div>
+    </div>`;
+}
+
+function previewPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('photo-preview').src = e.target.result;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-drop').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function handleItemNew(e, catalogId) {
+  e.preventDefault();
+  const photoInput = document.getElementById('photo-input');
+  if (!photoInput.files[0]) { toast('Seleccioná una foto', 'error'); return; }
+  const formData = new FormData();
+  formData.append('name', document.getElementById('item-name').value.trim());
+  formData.append('country', document.getElementById('item-country').value.trim());
+  formData.append('description', document.getElementById('item-desc').value.trim());
+  formData.append('photo', photoInput.files[0]);
+  try {
+    const token = localStorage.getItem('merma_token');
+    const res = await fetch(`${API}/catalogs/${catalogId}/items`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
+    toast('¡Item agregado!'); navigate('catalog', { id: catalogId });
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ==================== PROFILE ====================
+async function renderProfile() {
+  const user = getUser();
+  if (!user) { navigate('login'); return; }
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="container main"><p style="color:#64748b;text-align:center;padding:2rem">Cargando...</p></div>`;
+  try {
+    const [profile, catalogs] = await Promise.all([api('/auth/me'), api(`/catalogs?user=${user.userId}`)]);
+    app.innerHTML = `
+      <div class="container main">
+        <div class="profile-header">
+          <div class="profile-avatar">${getInitials(profile.name)}</div>
+          <div style="flex:1">
+            <div class="profile-name">${profile.name}</div>
+            ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
+            <div class="profile-stats">
+              <div class="profile-stat"><div class="profile-stat-num">${profile.catalogCount}</div><div class="profile-stat-label">Catálogos</div></div>
+              <div class="profile-stat"><div class="profile-stat-num">${profile.itemCount}</div><div class="profile-stat-label">Items</div></div>
+              <div class="profile-stat"><div class="profile-stat-num">${profile.followerCount}</div><div class="profile-stat-label">Seguidores</div></div>
+              <div class="profile-stat"><div class="profile-stat-num">${profile.followingCount}</div><div class="profile-stat-label">Siguiendo</div></div>
+            </div>
+          </div>
+          <button class="btn-outline btn-sm" onclick="logout()">Cerrar</button>
+        </div>
+        <h2 style="font-weight:700;margin-bottom:1rem">Mis Catálogos</h2>
+        ${catalogs.length === 0 ? `<div class="empty-state"><div class="empty-state-icon">📦</div><h3>Sin catálogos aún</h3><button class="btn-primary" onclick="navigate('catalog-new')">+ Crear</button></div>` :
+          `<div class="grid grid-3">${catalogs.map(c => `<div class="card catalog-card" onclick="navigate('catalog',{id:${c.id}})"><div class="catalog-card-body"><h3 class="catalog-title">${c.name}</h3>${c.category_name ? `<span class="badge badge-cat">${c.category_emoji} ${c.category_name}</span>` : ''}<div class="catalog-meta" style="margin-top:0.5rem"><span>📦 ${c.item_count} items</span></div></div></div>`).join('')}</div>`}
+      </div>`;
+  } catch (e) { app.innerHTML = `<div class="container main"><div class="empty-state"><h3>Error</h3><p>${e.message}</p></div></div>`; }
+}
+
+// ==================== USER PROFILE ====================
+async function renderUserProfile(params) {
+  const { id } = params;
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="container main"><p style="color:#64748b;text-align:center;padding:2rem">Cargando...</p></div>`;
+  try {
+    const user = getUser();
+    const [profile, catalogs] = await Promise.all([api(`/users/${id}`), api(`/users/${id}/catalogs`)]);
+    const isSelf = user && user.userId == id;
+    app.innerHTML = `
+      <div class="container main">
+        <div class="profile-header">
+          <div class="profile-avatar">${getInitials(profile.name)}</div>
+          <div style="flex:1">
+            <div class="profile-name">${profile.name}</div>
+            ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
+            <div class="profile-stats">
+              <div class="profile-stat"><div class="profile-stat-num">${profile.catalogCount}</div><div class="profile-stat-label">Catálogos</div></div>
+              <div class="profile-stat"><div class="profile-stat-num">${profile.itemCount}</div><div class="profile-stat-label">Items</div></div>
+              <div class="profile-stat"><div class="profile-stat-num">${profile.followerCount}</div><div class="profile-stat-label">Seguidores</div></div>
+            </div>
+          </div>
+          ${!isSelf && user ? `<button class="btn-outline btn-sm" onclick="toggleFollow(${id})">${profile.is_following ? 'Siguiendo' : 'Seguir'}</button>` : ''}
+        </div>
+        ${catalogs.length === 0 ? `<div class="empty-state"><div class="empty-state-icon">📦</div><h3>Este usuario aún no tiene catálogos públicos</h3></div>` :
+          `<div class="grid grid-3">${catalogs.map(c => `<div class="card catalog-card" onclick="navigate('catalog',{id:${c.id}})"><div class="catalog-card-body"><h3 class="catalog-title">${c.name}</h3>${c.category_name ? `<span class="badge badge-cat">${c.category_emoji} ${c.category_name}</span>` : ''}<div class="catalog-meta" style="margin-top:0.5rem"><span>📦 ${c.item_count} items</span></div></div></div>`).join('')}</div>`}
+      </div>`;
+  } catch (e) { app.innerHTML = `<div class="container main"><div class="empty-state"><h3>Error</h3><p>${e.message}</p></div></div>`; }
+}
+
+// ==================== ROUTER ====================
+async function router() {
+  const { page, query } = getPageFromHash();
+  currentPage = page;
+  updateNav();
+  try {
+    switch (page) {
+      case 'home': return renderHome(query);
+      case 'catalog': return renderCatalog(query);
+      case 'login': return renderLogin();
+      case 'register': return renderRegister();
+      case 'my-catalogs': return renderMyCatalogs();
+      case 'catalog-new': return renderCatalogNew();
+      case 'item-new': return renderItemNew();
+      case 'profile': return renderProfile();
+      case 'user-profile': return renderUserProfile(query);
+      default: return renderHome(query);
+    }
+  } catch (e) { document.getElementById('app').innerHTML = `<div class="container main"><div class="empty-state"><h3>Error</h3><p>${e.message}</p></div></div>`; }
+}
+
+window.addEventListener('hashchange', router);
+window.addEventListener('load', () => { updateNav(); router(); });
+</script>
+</body>
+</html>
